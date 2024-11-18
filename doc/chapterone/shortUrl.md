@@ -11,8 +11,8 @@ Design a system for creating a URL shortening service similar to TinyURL. This s
 #### 1. URL Shortening:
 
 - Users can input a long URL and receive a shortened URL in return.
-- The system should generate a unique, short alias for each long URL.
-- Restful APIs for programmatic URL shortening and management.
+- The system should generate a **unique**, short alias for each long URL.
+- **Restful APIs** for programmatic URL shortening and management.
 
 #### 2. URL Redirection:
 
@@ -21,11 +21,11 @@ Design a system for creating a URL shortening service similar to TinyURL. This s
 ### Nice-to-have functions
 
 * Custom Alias - Allow users to create custom short URLs if the alias is available and valid.
-* Provide an option to set an expiration date for the shortened URLs
-* Analytics - Track usage statictics for each shortened URL
+* Provide an option to set an **expiration date** for the shortened URLs
+* Analytics - **Track** usage statictics for each shortened URL
 
 ## Non-Functional Requirement
 
-1. Performance - the service should generate short URLs quickly.
+1. Performance - the service should generate short URLs **quickly**.
 2. URL redirection should be fast.
 3. Ensure that shortened URLs are unique and have no collitions
