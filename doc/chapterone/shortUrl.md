@@ -42,6 +42,8 @@ In terms of database storage, with approximately **4 billion rows** (2 billion U
 
 ## High-Level Design
 
+![20241119_165631.png](assets/2024-11-19_165631.png)
+
 #### How does the system generally work?
 
 The core idea is that each time a user generates a short URL, a unique short string is created as the key for the original URL. When the user accesses the short URL, the system retrieves the corresponding original URL from the database and performs the redirection.
@@ -68,7 +70,7 @@ A long URL can correspond to a single short URL, or can it correspond to multipl
 
 Generally speaking, a long URL should generate different short URLs depending on factors like location, user, etc. This way, the backend database can better perform data analysis. If a long URL is mapped to a single short URL, there will only be one row of data in the database, making it impossible to distinguish between different sources and thus preventing data analysis.
 
-For example, using a 7-character short URL as a unique ID, various information can be associated with this ID, such as the username that generated the URL, the website it was generated from, the HTTP header's User Agent, and so on. Collecting this information makes it possible to perform big data analysis and extract valuable insights later. One of the major revenue sources for URL shortening service providers is this data.
+Moreover, if a long URL can only correspond to a single short URL, when the same long URL is requested multiple times (e.g., by different users), the system would need to check whether the URL has been generated before. This query would significantly increase the system's load, potentially leading to performance issues and other risks.
 
 ## Data-Structure Design
 
