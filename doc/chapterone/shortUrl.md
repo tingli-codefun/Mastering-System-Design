@@ -42,15 +42,33 @@ In terms of database storage, with approximately **4 billion rows** (2 billion U
 
 ## High-Level Design
 
+#### How does the system generally work?
+
+The core idea is that each time a user generates a short URL, a unique short string is created as the key for the original URL. When the user accesses the short URL, the system retrieves the corresponding original URL from the database and performs the redirection.
+
+#### 301 or 302 Redirect
+
+This is an interesting question. It mainly tests your understanding of 301 and 302 redirects, as well as your understanding of browser caching mechanisms.
+
+A **301** is a permanent redirect, while a **302** is a temporary redirect. Once a short URL is generated, it should remain unchanged, so using a 301 redirect aligns with HTTP semantics. However, if we use a 301 redirect, search engines like Google will display the real URL in search results, which means we won't be able to track the number of clicks on the short URL, nor will we be able to collect user information such as cookies and user agents. This data is valuable for big data analysis and is a primary revenue source for URL shortening service providers.
+
+So, the answer is 302.
+
 #### How short can the short URL be?
 
 We should aim to make the URL as short as possible while ensuring there are at least 2 billion unique short URLs. Using only lowercase and uppercase characters, along with digits, a length of 6 characters will be sufficient. This is because 62662^6**6**2**6** gives more than 50 billion unique combinations.~~~~
 
-### Where to store data?
+#### Where to store data?
 
 For persistent storage, relational databases like MySQL, PostgreSQL, or Oracle are excellent options. For performance optimization, a caching layer may be required (discussed later), and Redis would be a great choice for this purpose.
 
-Does 
+#### Does each source URL correspond to a single key (short url)?
+
+A long URL can correspond to a single short URL, or can it correspond to multiple short URLs? This is also a significant design choice.
+
+Generally speaking, a long URL should generate different short URLs depending on factors like location, user, etc. This way, the backend database can better perform data analysis. If a long URL is mapped to a single short URL, there will only be one row of data in the database, making it impossible to distinguish between different sources and thus preventing data analysis.
+
+For example, using a 7-character short URL as a unique ID, various information can be associated with this ID, such as the username that generated the URL, the website it was generated from, the HTTP header's User Agent, and so on. Collecting this information makes it possible to perform big data analysis and extract valuable insights later. One of the major revenue sources for URL shortening service providers is this data.
 
 ## Data-Structure Design
 
