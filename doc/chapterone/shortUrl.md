@@ -74,9 +74,43 @@ Moreover, if a long URL can only correspond to a single short URL, when the same
 
 ## Data-Structure Design
 
-![20241119_171033.png](assets/2024-11-19_171033.png)
+![20241119_191005.png](assets/2024-11-19_191005.png)
 
+> *Why do we need the `short_url_pool` table? What other database optimizations are possible? These questions will be discussed later.*
 
 ## API Design
 
+#### Add short url
+
+After user login, he/she could general new short url by post request:
+
+1. A POST endpoint /shorten that accepts a JSON payload with a url field and user_id field.
+2. The short url generation service will generate a 6-character string as the short url. This string is unique.
+3. The post will trigger services to generate database records in short_urls table, and then update the caching layer.
+4. When post successful, it will return response and 201 status code.
+5. If there's an error, it will return corresponding response and error code.
+
+##### POST request to https://myshorturldomain/shorten
+
+```
+{
+  "url": "https://www.example.com/very/long/url/that/needs/shortening",
+  "user_id": 6273621
+}
+```
+
+response
+
+```
+{
+  "user_id": 6273621,  
+  "id":"Ab3x9Y",
+  "short_url": "http://myshorturldomain/Ab3x9Y",
+  "url": "https://www.example.com/very/long/url/that/needs/shortening",
+  "create_at": "2024-11-19 08:28:51.971094",
+  "expire_at" : "2025-11-19 08:28:51.971094"
+}
+```
+
 ## Deep-Dive
+
