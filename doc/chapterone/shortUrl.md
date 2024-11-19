@@ -74,6 +74,9 @@ Moreover, if a long URL can only correspond to a single short URL, when the same
 
 ## Data-Structure Design
 
+![20241119_171033.png](assets/2024-11-19_171033.png)
+
+
 ## API Design
 
 ## Deep-Dive
