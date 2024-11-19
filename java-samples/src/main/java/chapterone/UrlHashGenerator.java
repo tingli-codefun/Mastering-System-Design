@@ -3,6 +3,7 @@ package chapterone;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.Instant;
 import java.util.Base64;
 
 public class UrlHashGenerator {
@@ -40,6 +41,31 @@ public class UrlHashGenerator {
             // Create SHA-256 hash
             MessageDigest md = MessageDigest.getInstance("SHA-256");
             md.update(url.getBytes());
+            byte[] digest = md.digest();
+
+            // Convert byte array to Base64 string
+            String base64 = Base64.getUrlEncoder().encodeToString(digest);
+
+            // Remove any non-alphanumeric characters
+            base64 = base64.replaceAll("[^a-zA-Z0-9]", "");
+
+            // Take the first 7 characters
+            return base64.substring(0, 7);
+
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public String generateHashSha256WithInstant(String url) {
+        try {
+            // Add current timestamp as salt
+            String saltedUrl = url + Instant.now().toEpochMilli();
+
+            // Create SHA-256 hash
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            md.update(saltedUrl.getBytes());
             byte[] digest = md.digest();
 
             // Convert byte array to Base64 string
