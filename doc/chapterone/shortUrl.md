@@ -146,3 +146,25 @@ public String generateHashSha256WithInstant(String url) {
 ```
 
 In real world, using Distributed global unique ID generation is also a very common approach.
+
+#### How to achieve 302 redirect
+
+The following java code demostrates this implementation.
+
+```
+@RestController
+@Slf4j
+public class UrlRedirectController {
+    private final TinyUrlService tinyUrlService;
+
+    public UrlRedirectController(final TinyUrlService tinyUrlService) {
+        this.tinyUrlService = tinyUrlService;
+    }
+
+    @GetMapping("/{tinyUrl}")
+    public ResponseEntity getLongUrl(@PathVariable String tinyUrl) {
+        String longUrl = tinyUrlService.getLongUrl(tinyUrl);
+        return ResponseEntity.status(HttpStatus.MOVED_PERMANENTLY).header("Location", longUrl).build();
+    }
+}
+```
