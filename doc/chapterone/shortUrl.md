@@ -114,7 +114,7 @@ response
 
 ## Deep-Dive
 
-#### How to generate short url from long url
+#### How to generate short url from long url?
 
 The most common approach is through hashing. The code snippet below demonstrates this implementation. Note line 4, where we mentioned that for the same long URL, we need to generate a different short URL each time. This is achieved using a timestamp as a salt value.
 
@@ -147,7 +147,7 @@ public String generateHashSha256WithInstant(String url) {
 
 In real world, using Distributed global unique ID generation is also a very common approach.
 
-#### How to achieve 302 redirect
+#### How to achieve 302 redirect?
 
 The following java code demostrates this implementation.
 
@@ -164,7 +164,29 @@ public class UrlRedirectController {
     @GetMapping("/{tinyUrl}")
     public ResponseEntity getLongUrl(@PathVariable String tinyUrl) {
         String longUrl = tinyUrlService.getLongUrl(tinyUrl);
-        return ResponseEntity.status(HttpStatus.MOVED_PERMANENTLY).header("Location", longUrl).build();
+        return ResponseEntity.status(HttpStatus.FOUND).header("Location", longUrl).build();
     }
 }
 ```
+
+#### How to make short url generation super fast?
+
+On average, the system is expected to generate 60 new short URLs per second. However, during peak times, the requests for short URL generation could spike to hundreds per second. If the service generates each short URL on-the-fly and performs comparisons to ensure uniqueness, it risks overloading the system and potentially causing a crash. So, how can we guarantee performance and maintain system availability under these conditions?
+
+The following approaches can address this challenge:
+
+* **Scale out the short URL generation service** by containerizing it and utilizing Kubernetes orchestration for dynamic and scheduled scaling. This ensures efficient resource management and enables the system to handle increased traffic by automatically adjusting capacity based on demand.
+* **Pre-generate unique short URLs** in advance to reduce real-time generation overhead.
+* **Recycle expired short URLs** to reclaim resources and maintain URL availability.
+* **Queue pre-generated short URLs** for fast, FIFO (First-In-First-Out) consumption, ensuring quick access and minimal delays.
+
+#### How to make redirection super fast?
+
+Given that the system needs to handle approximately 6,500 read requests per second and store 2 billion URL records, how can we ensure fast reading and redirection?
+
+When discussing performance, it's important to consider multiple layers and components. Let's break it down:
+
+* **Scale out the short URL query service**: Increase the number of service instances to handle higher query volumes.
+* **Caching**: Short URLs are ideal candidates for key-value storage. Implement a caching layer such as Redis or Memcached to store frequently accessed URLs in memory, reducing database queries and latency. Since cache capacity is limited, an **LRU (Least Recently Used)** strategy can help manage cache size efficiently.
+* **Database Sharding**: To manage large volumes of data, consider partitioning the database using techniques like user\_id-based or short URL-based hashing.
+* **Database Optimization**: Implement indexes to speed up lookups. Additionally, consider denormalizing the `users` and `short_urls` tables to improve performance by reducing join operations.
