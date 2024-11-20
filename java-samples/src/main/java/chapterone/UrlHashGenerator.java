@@ -74,8 +74,8 @@ public class UrlHashGenerator {
             // Remove any non-alphanumeric characters
             base64 = base64.replaceAll("[^a-zA-Z0-9]", "");
 
-            // Take the first 7 characters
-            return base64.substring(0, 7);
+            // Take the first 6 characters
+            return base64.substring(0, 6);
 
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();

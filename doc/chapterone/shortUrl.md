@@ -58,7 +58,7 @@ So, the answer is 302.
 
 #### How short can the short URL be?
 
-We should aim to make the URL as short as possible while ensuring there are at least 2 billion unique short URLs. Using only lowercase and uppercase characters, along with digits, a length of 6 characters will be sufficient. This is because 62662^6**6**2**6** gives more than 50 billion unique combinations.~~~~
+We should aim to make the URL as short as possible while ensuring there are at least 2 billion unique short URLs. Using only lowercase and uppercase characters, along with digits, a length of 6 characters will be sufficient. This is because 62662^6**6**2**6** gives more than 50 billion unique combinations.
 
 #### Where to store data?
 
@@ -114,3 +114,35 @@ response
 
 ## Deep-Dive
 
+#### How to generate short url from long url
+
+The most common approach is through hashing. The code snippet below demonstrates this implementation. Note line 4, where we mentioned that for the same long URL, we need to generate a different short URL each time. This is achieved using a timestamp as a salt value.
+
+```
+public String generateHashSha256WithInstant(String url) {
+        try {
+            // Add current timestamp as salt
+            String saltedUrl = url + Instant.now().toEpochMilli();
+
+            // Create SHA-256 hash
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            md.update(saltedUrl.getBytes());
+            byte[] digest = md.digest();
+
+            // Convert byte array to Base64 string
+            String base64 = Base64.getUrlEncoder().encodeToString(digest);
+
+            // Remove any non-alphanumeric characters
+            base64 = base64.replaceAll("[^a-zA-Z0-9]", "");
+
+            // Take the first 6 characters
+            return base64.substring(0, 6);
+
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+```
+
+In real world, using Distributed global unique ID generation is also a very common approach.
